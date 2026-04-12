@@ -1,0 +1,19 @@
+<%- include('partials/head') %>
+<%- include('partials/nav') %>
+
+<main class="page-main error-page">
+  <div class="container text-center">
+    <div class="error-icon">⚒️</div>
+    <h1 class="error-code">500</h1>
+    <h2>Something Went Wrong</h2>
+    <p>Our team is on it. Please try again in a moment.</p>
+    <% if (typeof error !== 'undefined' && process.env.NODE_ENV !== 'production') { %>
+      <pre class="error-detail"><%= error %></pre>
+    <% } %>
+    <div class="error-actions">
+      <a href="/" class="btn btn-primary">Go Home</a>
+    </div>
+  </div>
+</main>
+
+<%- include('partials/footer') %>

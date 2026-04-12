@@ -1,0 +1,131 @@
+<%- include('partials/head') %>
+<%- include('partials/nav') %>
+
+<main class="page-main">
+  <div class="page-hero">
+    <div class="container">
+      <h1>Make a Donation</h1>
+      <p>Your generosity builds homes, creates careers, and changes lives.</p>
+    </div>
+  </div>
+
+  <section class="section-pad">
+    <div class="container">
+      <div class="two-col-layout">
+
+        <!-- Left: Donation Form -->
+        <div class="two-col-form">
+          <div class="form-card">
+            <h2>Give Today</h2>
+            <!-- TODO: Replace this form with Stripe Payment Element or PayPal SDK -->
+            <!-- TODO: Add client-side payment processing before form submits -->
+            <form action="/donate" method="POST" id="donationForm">
+
+              <!-- Amount selector -->
+              <div class="form-group">
+                <label>Select an Amount</label>
+                <div class="amount-grid">
+                  <button type="button" class="amount-btn" data-amount="25">$25</button>
+                  <button type="button" class="amount-btn" data-amount="50">$50</button>
+                  <button type="button" class="amount-btn amount-btn-active" data-amount="100">$100</button>
+                  <button type="button" class="amount-btn" data-amount="250">$250</button>
+                  <button type="button" class="amount-btn" data-amount="500">$500</button>
+                  <button type="button" class="amount-btn" data-amount="1000">$1,000</button>
+                </div>
+                <div class="custom-amount-wrap">
+                  <label for="customAmount">Or enter a custom amount:</label>
+                  <div class="input-prefix">
+                    <span>$</span>
+                    <input type="number" id="customAmount" min="1" placeholder="Other amount" />
+                  </div>
+                </div>
+                <input type="hidden" name="amount" id="amountInput" value="100" />
+              </div>
+
+              <div class="form-group">
+                <label for="donorName">Full Name <span class="required">*</span></label>
+                <input type="text" id="donorName" name="donorName" required placeholder="Your name" />
+              </div>
+
+              <div class="form-group">
+                <label for="donorEmail">Email Address <span class="required">*</span></label>
+                <input type="email" id="donorEmail" name="donorEmail" required placeholder="your@email.com" />
+              </div>
+
+              <div class="form-group">
+                <label for="message">Leave a Message (optional)</label>
+                <textarea id="message" name="message" rows="3" placeholder="Why are you donating? Share your story..."></textarea>
+              </div>
+
+              <!-- TODO: Mount Stripe Payment Element here -->
+              <div class="payment-placeholder">
+                <!-- TODO: Replace with Stripe or PayPal integration
+                     For Stripe: <div id="payment-element"></div>
+                     Then handle stripe.confirmPayment() on submit
+                     
+                     For PayPal: Add PayPal Smart Button SDK and mount here
+                     <div id="paypal-button-container"></div> -->
+                <div class="todo-box">
+                  🔧 <strong>TODO:</strong> Connect payment processor (Stripe / PayPal) here. See <code>.env.example</code> for setup instructions.
+                </div>
+              </div>
+
+              <button type="submit" class="btn btn-primary btn-block btn-lg">
+                Complete Donation
+              </button>
+
+              <p class="form-disclaimer">🔒 Your donation is secure. We never store payment card data.</p>
+            </form>
+          </div>
+        </div>
+
+        <!-- Right: Impact Info -->
+        <div class="two-col-text">
+          <h2>Your Impact</h2>
+          <!-- TODO: Update these impact examples with real figures -->
+          <div class="impact-list">
+            <div class="impact-item">
+              <span class="impact-amount">$25</span>
+              <p>Covers the cost of lumber for one window frame</p>
+            </div>
+            <div class="impact-item">
+              <span class="impact-amount">$100</span>
+              <p>Funds a full day of construction training for an Indigenous apprentice</p>
+            </div>
+            <div class="impact-item">
+              <span class="impact-amount">$500</span>
+              <p>Purchases insulation and drywall for an entire room</p>
+            </div>
+            <div class="impact-item">
+              <span class="impact-amount">$2,500</span>
+              <p>Covers foundational materials for one complete home section</p>
+            </div>
+          </div>
+
+          <!-- Fundraising Progress -->
+          <div class="donate-progress-card">
+            <h3>Fundraising Progress</h3>
+            <div class="progress-amounts">
+              <span class="raised">$<%= totalRaised.toLocaleString() %> raised</span>
+              <span class="goal">of $<%= goalAmount.toLocaleString() %></span>
+            </div>
+            <div class="progress-bar-wrap">
+              <div class="progress-bar-fill" style="width:<%= progressPercent %>%"></div>
+            </div>
+            <p class="progress-label"><%= progressPercent %>% funded — help us reach 100%!</p>
+          </div>
+
+          <div class="donate-trust-signals">
+            <p>✅ 100% of donations support the Reservation Homes Project directly</p>
+            <!-- TODO: Add nonprofit/501c3 status once registered -->
+            <p><!-- TODO: ✅ Tax-deductible (EIN: XX-XXXXXXX) once 501(c)(3) status is confirmed --></p>
+            <p>✅ Transparent reporting — progress updates posted regularly on the blog</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+</main>
+
+<%- include('partials/footer') %>

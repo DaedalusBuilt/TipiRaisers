@@ -1,0 +1,133 @@
+<%- include('partials/head') %>
+<%- include('partials/nav') %>
+
+<main class="page-main">
+  <div class="page-hero">
+    <div class="container">
+      <h1>Get Involved</h1>
+      <p>There's a role for everyone in this mission. Let's build something great together.</p>
+    </div>
+  </div>
+
+  <!-- Ways to Help Overview -->
+  <section class="section-pad">
+    <div class="container">
+      <div class="involve-ways">
+        <a href="#volunteer" class="involve-card">
+          <div class="involve-icon">🔨</div>
+          <h3>Volunteer</h3>
+          <p>Donate your time and skills to the project.</p>
+        </a>
+        <a href="/donate" class="involve-card">
+          <div class="involve-icon">💛</div>
+          <h3>Donate</h3>
+          <p>Fund materials, training, and families directly.</p>
+        </a>
+        <a href="#partner" class="involve-card">
+          <div class="involve-icon">🤝</div>
+          <h3>Partner</h3>
+          <p>Organizations and businesses supporting the cause.</p>
+        </a>
+        <a href="#spread" class="involve-card">
+          <div class="involve-icon">📢</div>
+          <h3>Spread the Word</h3>
+          <p>Share our story and grow the community.</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Volunteer Sign-Up -->
+  <section class="section-pad bg-cream" id="volunteer">
+    <div class="container">
+      <div class="two-col-layout">
+        <div class="two-col-text">
+          <h2>Volunteer With Us</h2>
+          <p>We need people with all kinds of skills — not just construction. Whether you can swing a hammer or write a grant, we want to hear from you.</p>
+          <ul class="feature-list">
+            <li>Construction & Trades (carpenters, electricians, plumbers)</li>
+            <li>Construction Training & Education</li>
+            <li>Project Coordination & Scheduling</li>
+            <li>Grant Writing & Fundraising</li>
+            <li>Marketing, Photography & Social Media</li>
+            <li>Community Outreach</li>
+          </ul>
+        </div>
+        <div class="two-col-form">
+          <form action="/get-involved/volunteer" method="POST" class="form-card">
+            <h3>Sign Up to Volunteer</h3>
+            <div class="form-group">
+              <label for="name">Full Name <span class="required">*</span></label>
+              <input type="text" id="name" name="name" required placeholder="Your name" />
+            </div>
+            <div class="form-group">
+              <label for="email">Email <span class="required">*</span></label>
+              <input type="email" id="email" name="email" required placeholder="your@email.com" />
+            </div>
+            <div class="form-group">
+              <label for="phone">Phone (optional)</label>
+              <input type="tel" id="phone" name="phone" placeholder="(XXX) XXX-XXXX" />
+            </div>
+            <div class="form-group">
+              <label>Areas of Interest</label>
+              <div class="checkbox-group">
+                <label><input type="checkbox" name="interests" value="construction" /> Construction & Trades</label>
+                <label><input type="checkbox" name="interests" value="training" /> Training & Education</label>
+                <label><input type="checkbox" name="interests" value="project-mgmt" /> Project Management</label>
+                <label><input type="checkbox" name="interests" value="grants" /> Grant Writing</label>
+                <label><input type="checkbox" name="interests" value="marketing" /> Marketing & Social Media</label>
+                <label><input type="checkbox" name="interests" value="outreach" /> Community Outreach</label>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="skills">Your Skills / Experience</label>
+              <textarea id="skills" name="skills" rows="3" placeholder="Tell us about your background..."></textarea>
+            </div>
+            <div class="form-group">
+              <label for="availableHours">Hours Available Per Month</label>
+              <select id="availableHours" name="availableHours">
+                <option value="">Select...</option>
+                <option value="1-5">1–5 hours</option>
+                <option value="5-10">5–10 hours</option>
+                <option value="10-20">10–20 hours</option>
+                <option value="20+">20+ hours</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="message">Anything else we should know?</label>
+              <textarea id="message" name="message" rows="3" placeholder="Optional message..."></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Submit Volunteer Interest</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Partner With Us -->
+  <section class="section-pad" id="partner">
+    <div class="container content-narrow text-center">
+      <h2>Partner With Us</h2>
+      <p>We welcome partnerships with tribal organizations, government agencies, nonprofits, construction companies, universities, and businesses that align with our mission.</p>
+      <!-- TODO: Add a formal partnership application or contact form here -->
+      <p>To discuss a partnership, reach out directly:</p>
+      <p>📧 <a href="mailto:partnerships@tipirasers.org">partnerships@tipirasers.org</a></p>
+      <!-- TODO: Create a dedicated /partners page with current partner logos -->
+    </div>
+  </section>
+
+  <!-- Spread the Word -->
+  <section class="section-pad bg-earth" id="spread">
+    <div class="container text-center">
+      <h2>Spread the Word</h2>
+      <p>Sharing our mission is one of the most powerful things you can do. Post about us, tag a friend, or share our campaign with your network.</p>
+      <!-- TODO: Add real social links and a sharable graphic or card -->
+      <div class="social-share-buttons">
+        <a href="https://twitter.com/intent/tweet?text=I%20support%20the%20Reservation%20Homes%20Project%20by%20Tipi%20Raisers!&url=<%= siteUrl %>" target="_blank" class="btn btn-social">Share on Twitter / X</a>
+        <a href="https://www.facebook.com/sharer/sharer.php?u=<%= siteUrl %>" target="_blank" class="btn btn-social">Share on Facebook</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<%- include('partials/footer') %>

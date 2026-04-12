@@ -1,0 +1,106 @@
+<%- include('partials/head') %>
+<%- include('partials/nav') %>
+
+<main class="page-main">
+  <div class="page-hero">
+    <div class="container">
+      <h1>Project Progress</h1>
+      <p>Tracking every milestone on our road to 2035.</p>
+    </div>
+  </div>
+
+  <!-- Progress Overview Stats -->
+  <section class="section-pad bg-cream">
+    <div class="container">
+      <div class="stats-grid">
+        <!-- TODO: Pull these values from a real data source once you have live metrics -->
+        <div class="stat-card">
+          <span class="stat-number">3</span>
+          <span class="stat-label">Milestones Completed</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number">0</span>
+          <span class="stat-label">Homes Built</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number">0</span>
+          <span class="stat-label">Workers Trained</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number">9</span>
+          <span class="stat-label">Years to Goal</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Timeline -->
+  <section class="section-pad">
+    <div class="container">
+      <h2 class="section-title text-center">Our Roadmap</h2>
+      <div class="timeline">
+        <% milestones.forEach((milestone, i) => { %>
+          <div class="timeline-item <%= milestone.completed ? 'timeline-done' : 'timeline-pending' %>">
+            <div class="timeline-marker">
+              <% if (milestone.completed) { %>
+                <span class="marker-check">✓</span>
+              <% } else { %>
+                <span class="marker-num"><%= i + 1 %></span>
+              <% } %>
+            </div>
+            <div class="timeline-content">
+              <div class="timeline-header">
+                <h3><%= milestone.label %></h3>
+                <span class="timeline-date"><%= milestone.date %></span>
+                <% if (milestone.completed) { %>
+                  <span class="timeline-badge badge-done">Completed</span>
+                <% } else { %>
+                  <span class="timeline-badge badge-upcoming">Upcoming</span>
+                <% } %>
+              </div>
+              <p><%= milestone.description %></p>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    </div>
+  </section>
+
+  <!-- Photo Gallery Placeholder -->
+  <section class="section-pad bg-earth">
+    <div class="container">
+      <h2 class="section-title text-center">From the Build Site</h2>
+      <!-- TODO: Replace placeholders with actual construction/community photos -->
+      <!-- TODO: Consider adding a lightbox gallery (e.g. GLightbox or PhotoSwipe) -->
+      <div class="gallery-grid">
+        <div class="gallery-item"><img src="/images/IMG_0389.jpg" alt="Project photo" loading="lazy" /></div>
+        <div class="gallery-item"><img src="/images/IMG_0391.jpg" alt="Project photo" loading="lazy" /></div>
+        <div class="gallery-item"><img src="/images/IMG_0394.jpg" alt="Project photo" loading="lazy" /></div>
+        <div class="gallery-item"><img src="/images/IMG_0413.jpg" alt="Project photo" loading="lazy" /></div>
+        <div class="gallery-item"><img src="/images/IMG_0417.jpg" alt="Project photo" loading="lazy" /></div>
+        <div class="gallery-item"><img src="/images/IMG_0420.jpg" alt="Project photo" loading="lazy" /></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Recent Progress Posts -->
+  <section class="section-pad">
+    <div class="container text-center">
+      <h2>Latest Progress Updates</h2>
+      <p>Follow our blog for detailed write-ups on every step of the project.</p>
+      <a href="/blog?category=Progress%20Update" class="btn btn-primary">Read Progress Posts</a>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="section-pad bg-cream">
+    <div class="container text-center">
+      <h2>Help Us Hit the Next Milestone</h2>
+      <p>Every donation and volunteer hour moves us closer to our 2035 goal.</p>
+      <a href="/donate" class="btn btn-primary btn-lg">Donate Now</a>
+      <a href="/get-involved" class="btn btn-secondary btn-lg">Volunteer</a>
+    </div>
+  </section>
+</main>
+
+<%- include('partials/footer') %>

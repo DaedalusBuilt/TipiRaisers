@@ -1,0 +1,103 @@
+<%- include('../partials/head') %>
+
+<body class="admin-body">
+<header class="admin-header">
+  <div class="admin-header-inner">
+    <a href="/" class="logo"><span>🏠</span> Tipi Raisers</a>
+    <nav class="admin-nav">
+      <a href="/admin">← Dashboard</a>
+      <a href="/" target="_blank">View Site</a>
+      <a href="/admin/logout" class="admin-logout">Log Out</a>
+    </nav>
+  </div>
+</header>
+
+<main class="admin-main">
+  <div class="admin-container">
+    <% if (typeof flash !== 'undefined' && flash.error && flash.error.length) { %>
+      <div class="flash flash-error"><%= flash.error[0] %></div>
+    <% } %>
+
+    <h1 class="admin-title"><%= post ? 'Edit Post' : 'New Post' %></h1>
+
+    <form action="<%= post ? '/admin/posts/' + post.id : '/admin/posts' %>" method="POST" class="admin-form">
+      <div class="admin-form-grid">
+        <div class="admin-form-main">
+          <div class="form-group">
+            <label for="title">Post Title <span class="required">*</span></label>
+            <input type="text" id="title" name="title" required
+                   value="<%= post ? post.title : '' %>" placeholder="Enter a compelling title..." />
+          </div>
+
+          <div class="form-group">
+            <label for="content">Content (Markdown supported) <span class="required">*</span></label>
+            <!-- TODO: Add a rich text / WYSIWYG editor (e.g. TipTap, Quill, or SimpleMDE) -->
+            <textarea id="content" name="content" rows="20" required
+                      placeholder="Write your post content here. Markdown is supported."><%= post ? post.content : '' %></textarea>
+            <small>Tip: Use **bold**, # headings, - lists, and [links](url) for formatting.</small>
+          </div>
+
+          <div class="form-group">
+            <label for="excerpt">Excerpt (shown on blog listing)</label>
+            <textarea id="excerpt" name="excerpt" rows="3"
+                      placeholder="Short summary shown on the blog listing page..."><%= post ? post.excerpt : '' %></textarea>
+          </div>
+        </div>
+
+        <div class="admin-form-sidebar">
+          <div class="sidebar-card">
+            <h3>Publish</h3>
+            <div class="form-group">
+              <label for="status">Status</label>
+              <select id="status" name="status">
+                <option value="draft" <%= !post || post.status === 'draft' ? 'selected' : '' %>>Draft</option>
+                <option value="published" <%= post && post.status === 'published' ? 'selected' : '' %>>Published</option>
+              </select>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary btn-block">
+                <%= post ? 'Update Post' : 'Create Post' %>
+              </button>
+              <a href="/admin" class="btn btn-ghost btn-block">Cancel</a>
+            </div>
+          </div>
+
+          <div class="sidebar-card">
+            <h3>Details</h3>
+            <div class="form-group">
+              <label for="category">Category</label>
+              <select id="category" name="category">
+                <option value="">Select category...</option>
+                <% ['Progress Update','Community Stories','How to Help','News & Events','Construction Updates','Volunteer Spotlight'].forEach(cat => { %>
+                  <option value="<%= cat %>" <%= post && post.category === cat ? 'selected' : '' %>><%= cat %></option>
+                <% }) %>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="imageUrl">Feature Image URL</label>
+              <input type="url" id="imageUrl" name="imageUrl"
+                     value="<%= post ? post.imageUrl : '' %>"
+                     placeholder="https://..." />
+              <!-- TODO: Replace URL input with file upload once multer is configured -->
+              <small>TODO: Enable image upload in /middleware</small>
+            </div>
+          </div>
+
+          <% if (post) { %>
+            <div class="sidebar-card sidebar-danger">
+              <h3>Danger Zone</h3>
+              <form action="/admin/posts/<%= post.id %>/delete" method="POST"
+                    onsubmit="return confirm('Are you sure you want to delete this post? This cannot be undone.')">
+                <button type="submit" class="btn btn-danger btn-block">Delete This Post</button>
+              </form>
+            </div>
+          <% } %>
+        </div>
+      </div>
+    </form>
+  </div>
+</main>
+
+<script src="/js/main.js"></script>
+</body>
+</html>

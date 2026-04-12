@@ -1,0 +1,26 @@
+<%- include('partials/head') %>
+<%- include('partials/nav') %>
+
+<main class="page-main">
+  <section class="section-pad text-center thanks-page">
+    <div class="container content-narrow">
+      <div class="thanks-icon">🏠</div>
+      <h1>Thank You!</h1>
+      <p class="thanks-sub">Your generosity is the foundation of this project. Because of supporters like you, we can build quality homes and create real opportunities for Indigenous families.</p>
+      <p>You should receive a confirmation email shortly.</p>
+      <!-- TODO: Include donation receipt details here once payment processor is connected -->
+      <div class="thanks-actions">
+        <a href="/progress" class="btn btn-primary">See Our Progress</a>
+        <a href="/blog" class="btn btn-secondary">Read Our Blog</a>
+        <a href="/" class="btn btn-ghost">Return Home</a>
+      </div>
+      <div class="thanks-share">
+        <p>Help us reach more supporters — share our mission!</p>
+        <a href="https://twitter.com/intent/tweet?text=I+just+donated+to+the+Reservation+Homes+Project+by+Tipi+Raisers!&url=<%= siteUrl %>" target="_blank" class="btn btn-social">Share on X</a>
+        <a href="https://www.facebook.com/sharer/sharer.php?u=<%= siteUrl %>" target="_blank" class="btn btn-social">Share on Facebook</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<%- include('partials/footer') %>

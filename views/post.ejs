@@ -1,0 +1,79 @@
+<%- include('partials/head') %>
+<%- include('partials/nav') %>
+
+<main class="page-main">
+  <article class="single-post">
+    <!-- Post Header -->
+    <header class="post-header">
+      <div class="container post-header-inner">
+        <div class="post-breadcrumb">
+          <a href="/blog">← Back to Blog</a>
+          <span>/</span>
+          <span><%= post.category %></span>
+        </div>
+        <h1 class="post-title"><%= post.title %></h1>
+        <div class="post-header-meta">
+          <span>By <strong><%= post.author %></strong></span>
+          <span class="dot">·</span>
+          <span><%= new Date(post.createdAt).toLocaleDateString('en-US', {month:'long', day:'numeric', year:'numeric'}) %></span>
+          <span class="dot">·</span>
+          <span class="post-category-tag"><%= post.category %></span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Post Feature Image -->
+    <% if (post.imageUrl) { %>
+      <div class="post-feature-img">
+        <img src="<%= post.imageUrl %>" alt="<%= post.title %>" />
+      </div>
+    <% } else { %>
+      <!-- TODO: Add a default feature image or remove this placeholder -->
+      <div class="post-feature-img post-feature-placeholder"></div>
+    <% } %>
+
+    <!-- Post Body -->
+    <div class="container post-body-wrap">
+      <div class="post-body prose">
+        <%- htmlContent %>
+      </div>
+
+      <!-- Share Links -->
+      <div class="post-share">
+        <span>Share this post:</span>
+        <!-- TODO: Update social share URLs with your actual handles -->
+        <a href="https://twitter.com/intent/tweet?url=<%= encodeURIComponent(siteUrl + '/blog/' + post.slug) %>&text=<%= encodeURIComponent(post.title) %>" target="_blank" rel="noopener" class="share-btn share-twitter">Twitter / X</a>
+        <a href="https://www.facebook.com/sharer/sharer.php?u=<%= encodeURIComponent(siteUrl + '/blog/' + post.slug) %>" target="_blank" rel="noopener" class="share-btn share-facebook">Facebook</a>
+      </div>
+
+      <!-- Related Posts -->
+      <% if (relatedPosts.length > 0) { %>
+        <section class="related-posts">
+          <h3>More in <%= post.category %></h3>
+          <div class="posts-grid">
+            <% relatedPosts.forEach(rp => { %>
+              <article class="post-card post-card-sm">
+                <div class="post-card-body">
+                  <span class="post-category"><%= rp.category %></span>
+                  <h4><a href="/blog/<%= rp.slug %>"><%= rp.title %></a></h4>
+                  <p class="post-excerpt"><%= rp.excerpt %></p>
+                  <a href="/blog/<%= rp.slug %>" class="read-more">Read More →</a>
+                </div>
+              </article>
+            <% }) %>
+          </div>
+        </section>
+      <% } %>
+
+      <!-- CTA after post -->
+      <div class="post-cta-box">
+        <h3>Want to Help Build This Future?</h3>
+        <p>Every home built is a family's life changed. Your support makes the Reservation Homes Project possible.</p>
+        <a href="/donate" class="btn btn-primary">Donate Now</a>
+        <a href="/get-involved" class="btn btn-secondary">Volunteer</a>
+      </div>
+    </div>
+  </article>
+</main>
+
+<%- include('partials/footer') %>

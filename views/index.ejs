@@ -1,0 +1,158 @@
+<%- include('partials/head') %>
+<%- include('partials/nav') %>
+
+<!-- ── Hero Section ───────────────────────────────────── -->
+<section class="hero">
+  <div class="hero-bg">
+    <!-- TODO: Replace with a high-quality photo of reservation homes or community:
+         Add your image as /public/images/hero-bg.jpg and update the CSS background-image -->
+  </div>
+  <div class="container hero-content">
+    <p class="hero-eyebrow">Reservation Homes Project</p>
+    <h1 class="hero-title">Building Homes.<br/>Building Futures.</h1>
+    <p class="hero-subtitle">Providing quality, affordable housing for tribal members while creating sustainable careers for Indigenous construction professionals — by 2035.</p>
+    <div class="hero-actions">
+      <a href="/donate" class="btn btn-primary btn-lg">Donate Now</a>
+      <a href="/get-involved" class="btn btn-outline btn-lg">Get Involved</a>
+    </div>
+  </div>
+  <div class="hero-scroll-indicator">
+    <span>↓</span>
+  </div>
+</section>
+
+<!-- ── Mission Statement ──────────────────────────────── -->
+<section class="mission section-pad">
+  <div class="container">
+    <div class="mission-quote">
+      <blockquote>
+        "It's no secret that reservation communities are in deep need of quality, affordable homes. With years of home construction efforts under our belts, we are launching the <strong>Reservation Homes Project</strong> — providing much needed housing for tribal members, sustainable income for Indigenous employees, and lasting value for stakeholders."
+      </blockquote>
+      <cite>— Tipi Raisers</cite>
+    </div>
+  </div>
+</section>
+
+<!-- ── Impact Numbers ─────────────────────────────────── -->
+<section class="impact-stats section-pad bg-earth">
+  <div class="container">
+    <h2 class="section-title text-center">Our Goal by 2035</h2>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <!-- TODO: Update these numbers to reflect actual targets -->
+        <span class="stat-number">100+</span>
+        <span class="stat-label">Affordable Homes Built</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-number">50+</span>
+        <span class="stat-label">Indigenous Workers Trained</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-number">400+</span>
+        <span class="stat-label">Tribal Members Housed</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-number">2035</span>
+        <span class="stat-label">Target Completion Year</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Donation Progress Bar ─────────────────────────── -->
+<section class="fundraiser section-pad">
+  <div class="container fundraiser-inner">
+    <div class="fundraiser-text">
+      <h2>Help Us Reach Our Goal</h2>
+      <p>Every dollar goes directly toward materials, training programs, and the families we serve. No corporate overhead — just community building.</p>
+      <a href="/donate" class="btn btn-primary">Make a Donation</a>
+    </div>
+    <div class="fundraiser-progress">
+      <div class="progress-amounts">
+        <span class="raised">$<%= totalRaised.toLocaleString() %> raised</span>
+        <!-- TODO: Update goal amount in routes/index.js and here -->
+        <span class="goal">Goal: $250,000</span>
+      </div>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" style="width: <%= Math.min(Math.round((totalRaised/250000)*100), 100) %>%"></div>
+      </div>
+      <p class="progress-label"><%= Math.min(Math.round((totalRaised/250000)*100), 100) %>% of our goal funded</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── Recent Blog Posts ──────────────────────────────── -->
+<section class="recent-posts section-pad">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">Latest Updates</h2>
+      <a href="/blog" class="btn btn-ghost">View All Posts →</a>
+    </div>
+    <div class="posts-grid">
+      <% if (recentPosts.length === 0) { %>
+        <p class="empty-state">No posts yet — check back soon!</p>
+      <% } else { %>
+        <% recentPosts.forEach(post => { %>
+          <article class="post-card">
+            <div class="post-card-img">
+              <!-- TODO: Display actual post image when imageUrl is available -->
+              <% if (post.imageUrl) { %>
+                <img src="<%= post.imageUrl %>" alt="<%= post.title %>" loading="lazy" />
+              <% } else { %>
+                <div class="post-card-img-placeholder"></div>
+              <% } %>
+              <span class="post-category"><%= post.category %></span>
+            </div>
+            <div class="post-card-body">
+              <h3><a href="/blog/<%= post.slug %>"><%= post.title %></a></h3>
+              <p class="post-excerpt"><%= post.excerpt %></p>
+              <div class="post-meta">
+                <span><%= new Date(post.createdAt).toLocaleDateString('en-US', {month:'long',day:'numeric',year:'numeric'}) %></span>
+                <a href="/blog/<%= post.slug %>" class="read-more">Read More →</a>
+              </div>
+            </div>
+          </article>
+        <% }) %>
+      <% } %>
+    </div>
+  </div>
+</section>
+
+<!-- ── Three Pillars Section ──────────────────────────── -->
+<section class="pillars section-pad bg-cream">
+  <div class="container">
+    <h2 class="section-title text-center">Three Pillars of Change</h2>
+    <div class="pillars-grid">
+      <div class="pillar-card">
+        <div class="pillar-icon">🏠</div>
+        <h3>Quality Housing</h3>
+        <p>Delivering affordable, well-built homes that Native families are proud to call their own — safe, durable, and designed with community input.</p>
+      </div>
+      <div class="pillar-card">
+        <div class="pillar-icon">⚒️</div>
+        <h3>Indigenous Employment</h3>
+        <p>Training tribal members as professional construction tradespeople, creating sustainable careers and keeping economic value within the community.</p>
+      </div>
+      <div class="pillar-card">
+        <div class="pillar-icon">🌱</div>
+        <h3>Generational Legacy</h3>
+        <p>Equipping the next generation with skills, confidence, and opportunity — ensuring this mission grows stronger with every year.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Get Involved CTA ───────────────────────────────── -->
+<section class="cta-section section-pad">
+  <div class="container text-center">
+    <h2>Ready to Make a Difference?</h2>
+    <p>Whether you donate, volunteer, or spread the word — every action helps build a better future for reservation families.</p>
+    <div class="cta-buttons">
+      <a href="/donate" class="btn btn-primary btn-lg">Donate Today</a>
+      <a href="/get-involved" class="btn btn-secondary btn-lg">Volunteer</a>
+      <a href="/progress" class="btn btn-ghost btn-lg">See Our Progress</a>
+    </div>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,123 @@
+<%- include('../partials/head') %>
+
+<body class="admin-body">
+<header class="admin-header">
+  <div class="admin-header-inner">
+    <a href="/" class="logo"><span>🏠</span> Tipi Raisers</a>
+    <nav class="admin-nav">
+      <a href="/admin">Dashboard</a>
+      <a href="/admin/posts/new">New Post</a>
+      <a href="/" target="_blank">View Site</a>
+      <a href="/admin/logout" class="admin-logout">Log Out</a>
+    </nav>
+  </div>
+</header>
+
+<main class="admin-main">
+  <div class="admin-container">
+    <% if (typeof flash !== 'undefined' && flash.success && flash.success.length) { %>
+      <div class="flash flash-success"><%= flash.success[0] %></div>
+    <% } %>
+    <% if (typeof flash !== 'undefined' && flash.error && flash.error.length) { %>
+      <div class="flash flash-error"><%= flash.error[0] %></div>
+    <% } %>
+
+    <h1 class="admin-title">Dashboard</h1>
+
+    <!-- Admin Stats -->
+    <div class="admin-stats">
+      <div class="admin-stat"><strong><%= posts.length %></strong><span>Total Posts</span></div>
+      <div class="admin-stat"><strong><%= posts.filter(p=>p.status==='published').length %></strong><span>Published</span></div>
+      <div class="admin-stat"><strong><%= volunteers.length %></strong><span>Volunteer Sign-Ups</span></div>
+      <div class="admin-stat"><strong>$<%= totalRaised.toLocaleString() %></strong><span>Total Raised</span></div>
+    </div>
+
+    <!-- Blog Posts Table -->
+    <section class="admin-section">
+      <div class="admin-section-header">
+        <h2>Blog Posts</h2>
+        <a href="/admin/posts/new" class="btn btn-primary btn-sm">+ New Post</a>
+      </div>
+      <% if (posts.length === 0) { %>
+        <p class="empty-state">No posts yet. <a href="/admin/posts/new">Create your first post →</a></p>
+      <% } else { %>
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead><tr><th>Title</th><th>Category</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
+            <tbody>
+              <% posts.forEach(post => { %>
+                <tr>
+                  <td><a href="/blog/<%= post.slug %>" target="_blank"><%= post.title %></a></td>
+                  <td><%= post.category %></td>
+                  <td><span class="status-badge status-<%= post.status %>"><%= post.status %></span></td>
+                  <td><%= new Date(post.createdAt).toLocaleDateString() %></td>
+                  <td class="admin-actions">
+                    <a href="/admin/posts/<%= post.id %>/edit" class="btn btn-sm btn-ghost">Edit</a>
+                    <form action="/admin/posts/<%= post.id %>/delete" method="POST" style="display:inline"
+                          onsubmit="return confirm('Delete this post?')">
+                      <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                    </form>
+                  </td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      <% } %>
+    </section>
+
+    <!-- Recent Volunteers -->
+    <section class="admin-section">
+      <h2>Recent Volunteer Sign-Ups</h2>
+      <% if (volunteers.length === 0) { %>
+        <p class="empty-state">No volunteer sign-ups yet.</p>
+      <% } else { %>
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead><tr><th>Name</th><th>Email</th><th>Interests</th><th>Date</th></tr></thead>
+            <tbody>
+              <% volunteers.forEach(v => { %>
+                <tr>
+                  <td><%= v.name %></td>
+                  <td><a href="mailto:<%= v.email %>"><%= v.email %></a></td>
+                  <td><%= (v.interests || []).join(', ') %></td>
+                  <td><%= new Date(v.createdAt).toLocaleDateString() %></td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      <% } %>
+    </section>
+
+    <!-- Recent Donations -->
+    <section class="admin-section">
+      <h2>Recent Donations</h2>
+      <!-- TODO: Add export to CSV button once donation volume grows -->
+      <% if (donations.length === 0) { %>
+        <p class="empty-state">No donations recorded yet.</p>
+      <% } else { %>
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead><tr><th>Donor</th><th>Email</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead>
+            <tbody>
+              <% donations.forEach(d => { %>
+                <tr>
+                  <td><%= d.donorName %></td>
+                  <td><%= d.donorEmail %></td>
+                  <td>$<%= d.amount.toFixed(2) %></td>
+                  <td><span class="status-badge status-<%= d.status %>"><%= d.status %></span></td>
+                  <td><%= new Date(d.createdAt).toLocaleDateString() %></td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      <% } %>
+    </section>
+  </div>
+</main>
+
+<script src="/js/main.js"></script>
+</body>
+</html>
