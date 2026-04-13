@@ -38,13 +38,25 @@ const Donation = {
     const id  = uuidv4();
     const now = new Date().toISOString();
 
-    db.prepare(`
-      INSERT INTO donations (id, donor_name, donor_email, amount, message, payment_method, transaction_id, status, created_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', ?)
-    `).run(id, donorName, donorEmail, parseFloat(amount), message, paymentMethod, transactionId, now);
+    const db = require('../config/database');
 
-    return this.findById(id);
+const Donation = {
+  async findAll() {
+    const res = await db.query(
+      'SELECT * FROM donations ORDER BY created_at DESC'
+    );
+    return res.rows;
   },
+
+  async getTotalRaised() {
+    const res = await db.query(
+      'SELECT COALESCE(SUM(amount), 0) AS total FROM donations'
+    );
+    return res.rows[0].total;
+  }
+};
+
+module.exports = Donation;
 
   updateStatus(id, status, transactionId = null) {
     db.prepare('UPDATE donations SET status = ?, transaction_id = COALESCE(?, transaction_id) WHERE id = ?')
