@@ -305,8 +305,8 @@ h1,h2,h3,h4,h5 {
 .team-photo-placeholder { background: linear-gradient(135deg,var(--earth),var(--accent-light)); }
 .team-card h3 { font-size: 1.1rem; margin-bottom: 4px; }
 .team-role { color: var(--primary); font-size: 0.85rem; font-weight: 600; margin-bottom: 10px; }
-.team-bio {color: var(--text-muted); font-size: 0.875rem; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4; max-height: 4.5em; overflow: hidden;}
-.team-card.expanded .team-bio {max-height: none;}
+.team-bio {color: var(--text-muted); font-size: 0.875rem; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4; overflow: hidden;}
+.team-card.expanded .team-bio {-webkit-line-clamp: unset; display: block;}
 .partners-grid { display: flex; flex-wrap: wrap; gap: 24px; justify-content: center; margin: 40px 0; }
 .partner-logo-placeholder { width: 160px; height: 80px; background: var(--earth);
   border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center;
