@@ -19,6 +19,8 @@ const Volunteer = require('../models/Volunteer');
 const { requireAdmin, redirectIfAdmin } = require('../middleware/auth');
 const { syncDatabase } = require('../services/githubSync');
 
+console.log("DB PATH:", DB_PATH);
+console.log("POST COUNT:", db.prepare("SELECT COUNT(*) AS c FROM posts").get());
 // ── Multer file upload config ────────────────────────────
 const uploadDir = path.join(__dirname, '..', 'public', 'images', 'uploads');
 if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
