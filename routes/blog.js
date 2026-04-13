@@ -1,60 +1,34 @@
-/**
- * routes/blog.js — Blog listing and post detail routes
- */
-
-const express = require('express');
-const router = express.Router();
+const express  = require('express');
+const router   = express.Router();
 const { marked } = require('marked');
-const Post = require('../models/Post');
+const Post     = require('../models/Post');
 
-// ── Blog Index ───────────────────────────────────────────
-router.get('/', (req, res) => {
-  const { category, page = 1 } = req.query;
-  const POSTS_PER_PAGE = 6;
-  let posts = Post.findPublished();
+const CATEGORIES = ['Progress Update','Community Stories','How to Help','News & Events','Construction Updates','Volunteer Spotlight'];
+const PER_PAGE   = 6;
 
-  if (category) {
-    posts = posts.filter(p => p.category === category);
-  }
-
-  const totalPosts = posts.length;
-  const totalPages = Math.ceil(totalPosts / POSTS_PER_PAGE);
-  const offset = (page - 1) * POSTS_PER_PAGE;
-  const paginatedPosts = posts.slice(offset, offset + POSTS_PER_PAGE);
-
-  const categories = ['Progress Update', 'Community Stories', 'How to Help',
-                      'News & Events', 'Construction Updates', 'Volunteer Spotlight'];
-
-  res.render('blog', {
-    title: 'Blog',
-    posts: paginatedPosts,
-    categories,
-    currentCategory: category || null,
-    currentPage: parseInt(page),
-    totalPages,
-    flash: req.flash(),
-  });
+router.get('/', async (req, res) => {
+  const { category } = req.query;
+  const page = parseInt(req.query.page || 1);
+  let posts = [];
+  try {
+    posts = category ? await Post.findByCategory(category) : await Post.findPublished();
+    if (!Array.isArray(posts)) posts = [];
+  } catch (e) { posts = []; }
+  const totalPages     = Math.ceil(posts.length / PER_PAGE) || 1;
+  const paginatedPosts = posts.slice((page - 1) * PER_PAGE, page * PER_PAGE);
+  res.render('blog', { title: 'Blog', posts: paginatedPosts, categories: CATEGORIES, currentCategory: category || null, currentPage: page, totalPages, flash: req.flash() });
 });
 
-// ── Single Post ──────────────────────────────────────────
-router.get('/:slug', (req, res) => {
-  const post = Post.findBySlug(req.params.slug);
-  if (!post || post.status !== 'published') {
-    return res.status(404).render('404', { title: 'Post Not Found' });
+router.get('/:slug', async (req, res) => {
+  try {
+    const post = await Post.findBySlug(req.params.slug);
+    if (!post || post.status !== 'published') return res.status(404).render('404', { title: 'Post Not Found' });
+    const htmlContent  = marked(post.content);
+    const relatedPosts = (await Post.findByCategory(post.category)).filter(p => p.id !== post.id).slice(0, 3);
+    res.render('post', { title: post.title, post, htmlContent, relatedPosts, flash: req.flash() });
+  } catch (e) {
+    res.status(500).render('500', { title: 'Server Error', error: e.message });
   }
-  // Convert markdown content to HTML
-  const htmlContent = marked(post.content);
-  const relatedPosts = Post.findByCategory(post.category)
-    .filter(p => p.id !== post.id)
-    .slice(0, 3);
-
-  res.render('post', {
-    title: post.title,
-    post,
-    htmlContent,
-    relatedPosts,
-    flash: req.flash(),
-  });
 });
 
 module.exports = router;
