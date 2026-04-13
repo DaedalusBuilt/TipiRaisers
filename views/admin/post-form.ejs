@@ -20,7 +20,7 @@
 
     <h1 class="admin-title"><%= post ? 'Edit Post' : 'New Post' %></h1>
 
-    <form action="<%= post ? '/admin/posts/' + post.id : '/admin/posts' %>" method="POST" class="admin-form">
+    <form action="<%= post ? '/admin/posts/' + post.id : '/admin/posts' %>" method="POST" enctype="multipart/form-data" class="admin-form">
       <div class="admin-form-grid">
         <div class="admin-form-main">
           <div class="form-group">
@@ -74,12 +74,33 @@
               </select>
             </div>
             <div class="form-group">
-              <label for="imageUrl">Feature Image URL</label>
-              <input type="url" id="imageUrl" name="imageUrl"
-                     value="<%= post ? post.imageUrl : '' %>"
-                     placeholder="https://..." />
-              <!-- TODO: Replace URL input with file upload once multer is configured -->
-              <small>TODO: Enable image upload in /middleware</small>
+              <label>Feature Image</label>
+
+              <!-- Current image preview -->
+              <% if (post && post.imageUrl) { %>
+                <div class="img-preview-wrap">
+                  <img src="<%= post.imageUrl %>" alt="Current image" class="img-preview" />
+                  <p class="img-preview-label">Current image</p>
+                </div>
+              <% } %>
+
+              <!-- File upload -->
+              <div class="file-upload-box" id="fileUploadBox">
+                <input type="file" id="imageFile" name="imageFile" accept="image/*" class="file-input" />
+                <label for="imageFile" class="file-upload-label">
+                  <span class="file-icon">📁</span>
+                  <span id="fileUploadText"><%= post && post.imageUrl ? 'Upload a new image to replace' : 'Click to upload an image' %></span>
+                  <small>JPG, PNG, GIF, WebP — max 10MB</small>
+                </label>
+              </div>
+
+              <!-- OR paste a URL instead -->
+              <details class="url-fallback">
+                <summary>Or paste an image URL instead</summary>
+                <input type="url" id="imageUrl" name="imageUrl"
+                       value="<%= post ? post.imageUrl : '' %>"
+                       placeholder="https://example.com/photo.jpg" />
+              </details>
             </div>
           </div>
 

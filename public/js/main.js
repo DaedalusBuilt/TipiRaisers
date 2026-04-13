@@ -159,4 +159,18 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  /* ── File upload label update ─────────────────────────── */
+  const fileInput = document.getElementById('imageFile');
+  if (fileInput) {
+    fileInput.addEventListener('change', () => {
+      const label = document.querySelector('.file-upload-label');
+      const text  = document.getElementById('fileUploadText');
+      if (fileInput.files && fileInput.files[0]) {
+        const name = fileInput.files[0].name;
+        text.textContent = '✅ ' + name;
+        label.classList.add('has-file');
+      }
+    });
+  }
+
 });
