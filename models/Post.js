@@ -10,8 +10,9 @@ function rowToPost(row) {
   return {
     id: row.id, title: row.title, slug: row.slug, content: row.content,
     excerpt: row.excerpt, category: row.category, author: row.author,
-    imageUrl: row.image_url, status: row.status,
-    createdAt: row.created_at, updatedAt: row.updated_at,
+    imageUrl:  row.image_url,
+    images:    JSON.parse(row.images || '[]'),
+    status: row.status, createdAt: row.created_at, updatedAt: row.updated_at,
   };
 }
 
@@ -40,25 +41,29 @@ const Post = {
     const res = await db.query("SELECT * FROM posts WHERE status='published' ORDER BY created_at DESC LIMIT $1", [limit]);
     return res.rows.map(rowToPost);
   },
-  async create({ title, content, excerpt, category, author, imageUrl = '', status = 'draft' }) {
+  async create({ title, content, excerpt, category, author, imageUrl = '', images = [], status = 'draft' }) {
     const id   = uuidv4();
     const slug = slugify(title, { lower: true, strict: true });
     const now  = new Date().toISOString();
     const exc  = excerpt || content.substring(0, 200) + '...';
+    // First image in the array becomes the featured image
+    const featuredUrl = imageUrl || (images.length > 0 ? images[0] : '');
     await db.query(
-      'INSERT INTO posts (id,title,slug,content,excerpt,category,author,image_url,status,created_at,updated_at) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)',
-      [id, title, slug, content, exc, category, author, imageUrl, status, now, now]
+      'INSERT INTO posts (id,title,slug,content,excerpt,category,author,image_url,images,status,created_at,updated_at) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)',
+      [id, title, slug, content, exc, category, author, featuredUrl, JSON.stringify(images), status, now, now]
     );
     return this.findById(id);
   },
-  async update(id, { title, content, excerpt, category, imageUrl, status }) {
+  async update(id, { title, content, excerpt, category, imageUrl, images, status }) {
     const current = await this.findById(id);
     if (!current) return null;
     const now     = new Date().toISOString();
     const newSlug = title ? slugify(title, { lower: true, strict: true }) : current.slug;
+    const newImages = images !== undefined ? images : current.images;
+    const featuredUrl = imageUrl || (newImages.length > 0 ? newImages[0] : current.imageUrl);
     await db.query(
-      'UPDATE posts SET title=COALESCE($1,title), slug=$2, content=COALESCE($3,content), excerpt=COALESCE($4,excerpt), category=COALESCE($5,category), image_url=COALESCE($6,image_url), status=COALESCE($7,status), updated_at=$8 WHERE id=$9',
-      [title, newSlug, content, excerpt, category, imageUrl, status, now, id]
+      'UPDATE posts SET title=COALESCE($1,title), slug=$2, content=COALESCE($3,content), excerpt=COALESCE($4,excerpt), category=COALESCE($5,category), image_url=$6, images=$7, status=COALESCE($8,status), updated_at=$9 WHERE id=$10',
+      [title, newSlug, content, excerpt, category, featuredUrl, JSON.stringify(newImages), status, now, id]
     );
     return this.findById(id);
   },

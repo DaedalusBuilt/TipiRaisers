@@ -17,44 +17,39 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-// ── Multer + Cloudinary storage ──────────────────────────
-// Falls back to local disk if Cloudinary env vars are not set
+// ── Multer storage (Cloudinary or local fallback) ────────
 let upload;
 if (process.env.CLOUDINARY_CLOUD_NAME) {
   const storage = new CloudinaryStorage({
     cloudinary,
     params: {
-      folder:         'tipi-raisers',
+      folder:          'tipi-raisers',
       allowed_formats: ['jpg', 'jpeg', 'png', 'gif', 'webp'],
-      transformation: [{ width: 1200, crop: 'limit' }],
+      transformation:  [{ width: 1400, crop: 'limit' }],
     },
   });
   upload = multer({ storage, limits: { fileSize: 10 * 1024 * 1024 } });
 } else {
-  // Local fallback for development without Cloudinary
   const uploadDir = path.join(__dirname, '..', 'public', 'images', 'uploads');
   if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
-  const localStorage = multer.diskStorage({
-    destination: (req, file, cb) => cb(null, uploadDir),
-    filename:    (req, file, cb) => cb(null, Date.now() + '-' + Math.round(Math.random() * 1e6) + path.extname(file.originalname).toLowerCase()),
+  upload = multer({
+    storage: multer.diskStorage({
+      destination: (req, file, cb) => cb(null, uploadDir),
+      filename:    (req, file, cb) => cb(null, Date.now() + '-' + Math.round(Math.random() * 1e6) + path.extname(file.originalname).toLowerCase()),
+    }),
+    limits: { fileSize: 10 * 1024 * 1024 },
   });
-  upload = multer({ storage: localStorage, limits: { fileSize: 10 * 1024 * 1024 } });
 }
 
-// Helper: get the final image URL from an upload
-function getImageUrl(req, fallbackUrl) {
-  if (req.file) {
-    // Cloudinary gives req.file.path as the URL; local gives a filename
-    return req.file.path || '/images/uploads/' + req.file.filename;
-  }
-  return fallbackUrl || '';
+// Return URL from an uploaded file (works for both Cloudinary and local)
+function fileToUrl(file) {
+  return file.path || '/images/uploads/' + file.filename;
 }
 
 // ── Login ────────────────────────────────────────────────
 router.get('/login', redirectIfAdmin, (req, res) => {
   res.render('admin/login', { title: 'Admin Login', flash: req.flash() });
 });
-
 router.post('/login', (req, res) => {
   const { username, password } = req.body;
   if (username === (process.env.ADMIN_USERNAME || 'admin') && password === (process.env.ADMIN_PASSWORD || 'changeme123')) {
@@ -68,7 +63,6 @@ router.post('/login', (req, res) => {
   req.flash('error', 'Invalid credentials.');
   res.redirect('/admin/login');
 });
-
 router.get('/logout', (req, res) => { req.session.destroy(); res.redirect('/'); });
 
 // ── Dashboard ────────────────────────────────────────────
@@ -94,12 +88,16 @@ router.get('/posts/new', requireAdmin, (req, res) => {
   res.render('admin/post-form', { title: 'New Post', post: null, flash: req.flash() });
 });
 
-router.post('/posts', requireAdmin, upload.single('imageFile'), async (req, res) => {
-  const { title, content, excerpt, category, imageUrl, status } = req.body;
+router.post('/posts', requireAdmin, upload.array('imageFiles', 20), async (req, res) => {
+  const { title, content, excerpt, category, status } = req.body;
   if (!title || !content) { req.flash('error', 'Title and content are required.'); return res.redirect('/admin/posts/new'); }
-  const finalImageUrl = getImageUrl(req, imageUrl);
+
+  // Build images array from uploaded files
+  const images    = (req.files || []).map(fileToUrl);
+  const imageUrl  = images[0] || '';
+
   try {
-    await Post.create({ title, content, excerpt, category, author: req.session.adminUser, imageUrl: finalImageUrl, status });
+    await Post.create({ title, content, excerpt, category, author: req.session.adminUser, imageUrl, images, status });
     req.flash('success', `Post "${title}" created successfully.`);
   } catch (e) { console.error('Create error:', e); req.flash('error', 'Failed to create post.'); }
   res.redirect('/admin');
@@ -114,11 +112,19 @@ router.get('/posts/:id/edit', requireAdmin, async (req, res) => {
   } catch (e) { req.flash('error', 'Could not load post.'); res.redirect('/admin'); }
 });
 
-router.post('/posts/:id', requireAdmin, upload.single('imageFile'), async (req, res) => {
-  const { title, content, excerpt, category, imageUrl, status } = req.body;
-  const finalImageUrl = getImageUrl(req, imageUrl);
+router.post('/posts/:id', requireAdmin, upload.array('imageFiles', 20), async (req, res) => {
+  const { title, content, excerpt, category, status } = req.body;
+
+  // New uploads + kept existing images (sent as hidden inputs)
+  const newUploads   = (req.files || []).map(fileToUrl);
+  const keptImages   = Array.isArray(req.body.existingImages)
+    ? req.body.existingImages
+    : req.body.existingImages ? [req.body.existingImages] : [];
+  const images       = [...keptImages, ...newUploads];
+  const imageUrl     = images[0] || '';
+
   try {
-    await Post.update(req.params.id, { title, content, excerpt, category, imageUrl: finalImageUrl, status });
+    await Post.update(req.params.id, { title, content, excerpt, category, imageUrl, images, status });
     req.flash('success', 'Post updated.');
   } catch (e) { console.error('Update error:', e); req.flash('error', 'Failed to update post.'); }
   res.redirect('/admin');

@@ -3,6 +3,7 @@
 
 <main class="page-main">
   <article class="single-post">
+
     <!-- Post Header -->
     <header class="post-header">
       <div class="container post-header-inner">
@@ -22,13 +23,12 @@
       </div>
     </header>
 
-    <!-- Post Feature Image -->
+    <!-- Featured Image -->
     <% if (post.imageUrl) { %>
       <div class="post-feature-img">
         <img src="<%= post.imageUrl %>" alt="<%= post.title %>" />
       </div>
     <% } else { %>
-      <!-- TODO: Add a default feature image or remove this placeholder -->
       <div class="post-feature-img post-feature-placeholder"></div>
     <% } %>
 
@@ -38,10 +38,33 @@
         <%- htmlContent %>
       </div>
 
+      <!-- Photo Gallery (shows if more than 1 image) -->
+      <% const galleryImages = (post.images || []).filter(img => img && img !== post.imageUrl); %>
+      <% if (galleryImages.length > 0) { %>
+        <section class="post-gallery">
+          <h3 class="post-gallery-title">Photos</h3>
+          <div class="post-gallery-grid post-gallery-grid-<%= Math.min(galleryImages.length, 3) %>">
+            <% galleryImages.forEach((img, i) => { %>
+              <div class="post-gallery-item" onclick="openLightbox('<%= img %>', <%= i %>)">
+                <img src="<%= img %>" alt="Photo <%= i + 1 %>" loading="lazy" />
+                <div class="post-gallery-overlay"><span>View</span></div>
+              </div>
+            <% }) %>
+          </div>
+        </section>
+
+        <!-- Lightbox -->
+        <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+          <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+          <button class="lightbox-prev" onclick="event.stopPropagation(); changePhoto(-1)">&#8249;</button>
+          <img id="lightboxImg" src="" alt="" onclick="event.stopPropagation()" />
+          <button class="lightbox-next" onclick="event.stopPropagation(); changePhoto(1)">&#8250;</button>
+        </div>
+      <% } %>
+
       <!-- Share Links -->
       <div class="post-share">
         <span>Share this post:</span>
-        <!-- TODO: Update social share URLs with your actual handles -->
         <a href="https://twitter.com/intent/tweet?url=<%= encodeURIComponent(siteUrl + '/blog/' + post.slug) %>&text=<%= encodeURIComponent(post.title) %>" target="_blank" rel="noopener" class="share-btn share-twitter">Twitter / X</a>
         <a href="https://www.facebook.com/sharer/sharer.php?u=<%= encodeURIComponent(siteUrl + '/blog/' + post.slug) %>" target="_blank" rel="noopener" class="share-btn share-facebook">Facebook</a>
       </div>
@@ -65,7 +88,7 @@
         </section>
       <% } %>
 
-      <!-- CTA after post -->
+      <!-- CTA -->
       <div class="post-cta-box">
         <h3>Want to Help Build This Future?</h3>
         <p>Every home built is a family's life changed. Your support makes the Reservation Homes Project possible.</p>
@@ -75,5 +98,30 @@
     </div>
   </article>
 </main>
+
+<script>
+const galleryUrls = <%- JSON.stringify((post.images || []).filter(img => img && img !== post.imageUrl)) %>;
+let currentPhoto  = 0;
+
+function openLightbox(url, index) {
+  currentPhoto = index;
+  document.getElementById('lightboxImg').src = url;
+  document.getElementById('lightbox').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('active');
+  document.body.style.overflow = '';
+}
+function changePhoto(dir) {
+  currentPhoto = (currentPhoto + dir + galleryUrls.length) % galleryUrls.length;
+  document.getElementById('lightboxImg').src = galleryUrls[currentPhoto];
+}
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape')    closeLightbox();
+  if (e.key === 'ArrowLeft') changePhoto(-1);
+  if (e.key === 'ArrowRight') changePhoto(1);
+});
+</script>
 
 <%- include('partials/footer') %>

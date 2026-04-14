@@ -624,3 +624,94 @@ h1,h2,h3,h4,h5 {
 .url-fallback input { margin-top: 8px; width: 100%; padding: 10px 14px;
   border: 1.5px solid var(--border); border-radius: var(--radius-sm);
   font-size: 0.9rem; font-family: var(--font-body); }
+
+/* ── Post Gallery ──────────────────────────────────────── */
+.post-gallery { margin: 3rem 0; }
+.post-gallery-title { font-family: 'Playfair Display', serif; font-size: 1.5rem; margin-bottom: 1rem; color: var(--earth-brown); }
+
+.post-gallery-grid { display: grid; gap: 8px; }
+.post-gallery-grid-1 { grid-template-columns: 1fr; }
+.post-gallery-grid-2 { grid-template-columns: 1fr 1fr; }
+.post-gallery-grid-3 { grid-template-columns: repeat(3, 1fr); }
+
+/* If 4+ images use auto-fill */
+.post-gallery-grid:not(.post-gallery-grid-1):not(.post-gallery-grid-2):not(.post-gallery-grid-3) {
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+}
+
+.post-gallery-item {
+  position: relative; overflow: hidden; border-radius: 8px;
+  cursor: pointer; aspect-ratio: 4/3; background: var(--stone);
+}
+.post-gallery-item img {
+  width: 100%; height: 100%; object-fit: cover;
+  transition: transform 0.3s ease;
+}
+.post-gallery-item:hover img { transform: scale(1.04); }
+.post-gallery-overlay {
+  position: absolute; inset: 0; background: rgba(0,0,0,0.35);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity 0.2s;
+}
+.post-gallery-overlay span {
+  color: #fff; font-size: 0.9rem; font-weight: 600;
+  letter-spacing: 0.05em; text-transform: uppercase;
+}
+.post-gallery-item:hover .post-gallery-overlay { opacity: 1; }
+
+/* ── Lightbox ─────────────────────────────────────────── */
+.lightbox {
+  display: none; position: fixed; inset: 0; z-index: 9999;
+  background: rgba(0,0,0,0.92);
+  align-items: center; justify-content: center;
+}
+.lightbox.active { display: flex; }
+.lightbox img {
+  max-width: 90vw; max-height: 85vh;
+  object-fit: contain; border-radius: 4px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.6);
+}
+.lightbox-close {
+  position: absolute; top: 1.2rem; right: 1.5rem;
+  background: none; border: none; color: #fff;
+  font-size: 1.8rem; cursor: pointer; line-height: 1;
+}
+.lightbox-prev, .lightbox-next {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  background: rgba(255,255,255,0.15); border: none; color: #fff;
+  font-size: 2.5rem; padding: 0.3rem 0.7rem; cursor: pointer;
+  border-radius: 4px; transition: background 0.2s;
+}
+.lightbox-prev { left: 1rem; }
+.lightbox-next { right: 1rem; }
+.lightbox-prev:hover, .lightbox-next:hover { background: rgba(255,255,255,0.3); }
+
+/* ── Admin image grid ────────────────────────────────── */
+.img-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  gap: 8px; margin-bottom: 12px;
+}
+.img-grid-item {
+  position: relative; aspect-ratio: 1; border-radius: 6px;
+  overflow: hidden; background: var(--stone);
+}
+.img-grid-item img { width: 100%; height: 100%; object-fit: cover; }
+.img-remove-btn {
+  position: absolute; top: 3px; right: 3px;
+  background: rgba(0,0,0,0.65); border: none; color: #fff;
+  font-size: 0.7rem; width: 20px; height: 20px; border-radius: 50%;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  line-height: 1;
+}
+.img-remove-btn:hover { background: #c0392b; }
+.img-featured-badge {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  background: rgba(139,90,43,0.85); color: #fff;
+  font-size: 0.6rem; text-align: center; padding: 2px 0;
+  text-transform: uppercase; letter-spacing: 0.05em;
+}
+.form-hint { font-size: 0.8rem; color: var(--text-muted); margin: -4px 0 10px; }
+
+@media (max-width: 600px) {
+  .post-gallery-grid-2, .post-gallery-grid-3 { grid-template-columns: 1fr 1fr; }
+}

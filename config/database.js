@@ -13,11 +13,13 @@ const pool = new Pool({
 pool.connect()
   .then(async (client) => {
     console.log('[DB] PostgreSQL connected successfully');
+
     await client.query(`
       CREATE TABLE IF NOT EXISTS posts (
         id TEXT PRIMARY KEY, title TEXT NOT NULL, slug TEXT NOT NULL UNIQUE,
         content TEXT NOT NULL, excerpt TEXT, category TEXT,
         author TEXT DEFAULT 'Admin', image_url TEXT DEFAULT '',
+        images TEXT DEFAULT '[]',
         status TEXT DEFAULT 'draft', created_at TEXT NOT NULL, updated_at TEXT NOT NULL
       );
       CREATE TABLE IF NOT EXISTS donations (
@@ -32,6 +34,19 @@ pool.connect()
         status TEXT DEFAULT 'pending', created_at TEXT NOT NULL
       );
     `);
+
+    // Add images column to existing posts tables that don't have it yet
+    await client.query(`
+      DO $$ BEGIN
+        IF NOT EXISTS (
+          SELECT 1 FROM information_schema.columns
+          WHERE table_name='posts' AND column_name='images'
+        ) THEN
+          ALTER TABLE posts ADD COLUMN images TEXT DEFAULT '[]';
+        END IF;
+      END $$;
+    `);
+
     console.log('[DB] Tables verified / created.');
     client.release();
   })
