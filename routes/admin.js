@@ -1,6 +1,8 @@
 const express   = require('express');
 const router    = express.Router();
 const multer    = require('multer');
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const cloudinary = require('cloudinary').v2;
 const path      = require('path');
 const fs        = require('fs');
 const Post      = require('../models/Post');
@@ -8,17 +10,45 @@ const Donation  = require('../models/Donation');
 const Volunteer = require('../models/Volunteer');
 const { requireAdmin, redirectIfAdmin } = require('../middleware/auth');
 
-// ── File upload config ───────────────────────────────────
-const uploadDir = path.join(__dirname, '..', 'public', 'images', 'uploads');
-if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, uploadDir),
-  filename:    (req, file, cb) => cb(null, Date.now() + '-' + Math.round(Math.random() * 1e6) + path.extname(file.originalname).toLowerCase()),
+// ── Cloudinary config ────────────────────────────────────
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key:    process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
 });
-const fileFilter = (req, file, cb) => {
-  ['.jpg','.jpeg','.png','.gif','.webp'].includes(path.extname(file.originalname).toLowerCase()) ? cb(null, true) : cb(new Error('Images only'));
-};
-const upload = multer({ storage, fileFilter, limits: { fileSize: 10 * 1024 * 1024 } });
+
+// ── Multer + Cloudinary storage ──────────────────────────
+// Falls back to local disk if Cloudinary env vars are not set
+let upload;
+if (process.env.CLOUDINARY_CLOUD_NAME) {
+  const storage = new CloudinaryStorage({
+    cloudinary,
+    params: {
+      folder:         'tipi-raisers',
+      allowed_formats: ['jpg', 'jpeg', 'png', 'gif', 'webp'],
+      transformation: [{ width: 1200, crop: 'limit' }],
+    },
+  });
+  upload = multer({ storage, limits: { fileSize: 10 * 1024 * 1024 } });
+} else {
+  // Local fallback for development without Cloudinary
+  const uploadDir = path.join(__dirname, '..', 'public', 'images', 'uploads');
+  if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
+  const localStorage = multer.diskStorage({
+    destination: (req, file, cb) => cb(null, uploadDir),
+    filename:    (req, file, cb) => cb(null, Date.now() + '-' + Math.round(Math.random() * 1e6) + path.extname(file.originalname).toLowerCase()),
+  });
+  upload = multer({ storage: localStorage, limits: { fileSize: 10 * 1024 * 1024 } });
+}
+
+// Helper: get the final image URL from an upload
+function getImageUrl(req, fallbackUrl) {
+  if (req.file) {
+    // Cloudinary gives req.file.path as the URL; local gives a filename
+    return req.file.path || '/images/uploads/' + req.file.filename;
+  }
+  return fallbackUrl || '';
+}
 
 // ── Login ────────────────────────────────────────────────
 router.get('/login', redirectIfAdmin, (req, res) => {
@@ -67,7 +97,7 @@ router.get('/posts/new', requireAdmin, (req, res) => {
 router.post('/posts', requireAdmin, upload.single('imageFile'), async (req, res) => {
   const { title, content, excerpt, category, imageUrl, status } = req.body;
   if (!title || !content) { req.flash('error', 'Title and content are required.'); return res.redirect('/admin/posts/new'); }
-  const finalImageUrl = req.file ? '/images/uploads/' + req.file.filename : imageUrl || '';
+  const finalImageUrl = getImageUrl(req, imageUrl);
   try {
     await Post.create({ title, content, excerpt, category, author: req.session.adminUser, imageUrl: finalImageUrl, status });
     req.flash('success', `Post "${title}" created successfully.`);
@@ -86,7 +116,7 @@ router.get('/posts/:id/edit', requireAdmin, async (req, res) => {
 
 router.post('/posts/:id', requireAdmin, upload.single('imageFile'), async (req, res) => {
   const { title, content, excerpt, category, imageUrl, status } = req.body;
-  const finalImageUrl = req.file ? '/images/uploads/' + req.file.filename : imageUrl || '';
+  const finalImageUrl = getImageUrl(req, imageUrl);
   try {
     await Post.update(req.params.id, { title, content, excerpt, category, imageUrl: finalImageUrl, status });
     req.flash('success', 'Post updated.');
