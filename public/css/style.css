@@ -292,7 +292,7 @@ h1,h2,h3,h4,h5 {
 .post-card-sm .post-card-body { padding: 20px; }
 
 /* ── About Page ──────────────────────────────────────────── */
-.mission-pillars { display: grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap: 32px; margin-top: 48px; }
+.mission-pillars { display: grid; grid-template-columns: repeat(auto-fit,minmax(220px,220px)); gap: 32px; margin-top: 48px; }
 .mission-item { text-align: center; padding: 32px 24px; }
 .mission-num { display: block; font-family: var(--font-head); font-size: 3rem; font-weight: 700;
   color: var(--accent); line-height: 1; margin-bottom: 12px; }
