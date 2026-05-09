@@ -71,7 +71,7 @@
               <label for="category">Category</label>
               <select id="category" name="category">
                 <option value="">Select category...</option>
-                <% ['Progress Update','Community Stories','How to Help','News & Events','Construction Updates','Volunteer Spotlight'].forEach(cat => { %>
+                <% ['Progress Update','Community Stories','How to Help','News & Events','Construction Updates','Volunteer Spotlight','Housing Needs Assessment and Policy Research'].forEach(cat => { %>
                   <option value="<%= cat %>" <%= post && post.category === cat ? 'selected' : '' %>><%= cat %></option>
                 <% }) %>
               </select>
