@@ -100,6 +100,30 @@ router.post('/login', (req, res) => {
 
 router.get('/logout', (req, res) => { req.session.destroy(); res.redirect('/'); });
 
+// ── Storage diagnostic (admin only) ─────────────────────
+router.get('/storage-test', requireAdmin, async (req, res) => {
+  const result = { supabaseConfigured: !!supabase, supabaseError, uploadTest: null, uploadUrl: null, bucketPublic: null };
+  if (supabase) {
+    try {
+      const buf = Buffer.from('storage-test-' + Date.now());
+      const name = '__diag__' + Date.now() + '.txt';
+      const { error } = await supabase.storage.from('tipi-raisers').upload(name, buf, { contentType: 'text/plain', upsert: true });
+      if (error) {
+        result.uploadTest = 'FAILED: ' + error.message;
+      } else {
+        result.uploadTest = 'OK';
+        result.uploadUrl = supabase.storage.from('tipi-raisers').getPublicUrl(name).data.publicUrl;
+      }
+      const { data: buckets } = await supabase.storage.listBuckets();
+      const bucket = (buckets || []).find(b => b.id === 'tipi-raisers');
+      result.bucketPublic = bucket ? bucket.public : 'bucket not found';
+    } catch (e) {
+      result.uploadTest = 'EXCEPTION: ' + e.message;
+    }
+  }
+  res.json(result);
+});
+
 // ── Dashboard ────────────────────────────────────────────
 router.get('/', requireAdmin, async (req, res) => {
   try {
